@@ -15,23 +15,50 @@
 // та недоступні для зміни поля з даними користувача.
 // Клік по кнопці logout повертає все до початкового вигляду і видаляє дані користувача
 // з локального сховища.
-import { refs } from "./js/refs";
+import { refs } from './js/refs';
+import { saveData, getData, clearData } from './js/storage';
+
+const LS_KEY = 'user-data';
 const USER_DATA = {
   email: 'user@mail.com',
   password: 'secret',
 };
-const onFormSubmit = (event) => {
-    event.preventDefault()
-    const emailValue = refs.email.value.trim();
-    const passwordValue = refs.password.value.trim();
-    if (emailValue === "" || passwordValue === "") {
-        alert("Fill all fields!")
-        return;
-    }
-    if (emailValue !== USER_DATA.email || passwordValue !== USER_DATA.password) {
-        alert("Incorrect data!")
-        return;
-     }
+const userData = getData(LS_KEY);
+if (userData) {
+  refs.email.value = userData.email ?? '';
+  refs.password.value = userData.password ?? '';
+  refs.button.textContent = 'Logout';
+  refs.email.setAttribute('readonly', true);
+  refs.password.setAttribute('readonly', true);
 }
 
-refs.form.addEventListener("submit", onFormSubmit);
+const onFormSubmit = event => {
+  event.preventDefault();
+  const emailValue = refs.email.value.trim();
+  const passwordValue = refs.password.value.trim();
+
+  if (refs.button.textContent === 'Logout') {
+    clearData(LS_KEY);
+    refs.form.reset();
+    refs.email.removeAttribute('readonly');
+    refs.password.removeAttribute('readonly');
+    refs.button.textContent = 'Login';
+    return;
+  }
+
+  if (emailValue === '' || passwordValue === '') {
+    alert('Fill all fields!');
+    return;
+  }
+  if (emailValue !== USER_DATA.email || passwordValue !== USER_DATA.password) {
+    alert('Incorrect data!');
+    return;
+  }
+
+  saveData(LS_KEY, { email: emailValue, password: passwordValue });
+  refs.button.textContent = 'Logout';
+  refs.email.setAttribute('readonly', true);
+  refs.password.setAttribute('readonly', true);
+};
+
+refs.form.addEventListener('submit', onFormSubmit);
