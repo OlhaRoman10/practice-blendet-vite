@@ -15,15 +15,14 @@
 // та недоступні для зміни поля з даними користувача.
 // Клік по кнопці logout повертає все до початкового вигляду і видаляє дані користувача
 // з локального сховища.
-import "./js/modul-10";
+//import "./js/modul-10";
 import iziToast from 'izitoast';
 import { refs } from './js/refs';
 import { saveData, getData, clearData } from './js/storage';
 
+import 'izitoast/dist/css/iziToast.min.css';
 
-import "izitoast/dist/css/iziToast.min.css";
-
-import iconError from "./img/javascript.svg";
+import iconError from './img/javascript.svg';
 
 const LS_KEY = 'user-data';
 const USER_DATA = {
@@ -57,16 +56,16 @@ const onFormSubmit = event => {
     iziToast.warning({
       message: 'Fill all fields',
       iconUrl: iconError,
-      position: "topLeft"
-  });
+      position: 'topLeft',
+    });
     return;
   }
   if (emailValue !== USER_DATA.email || passwordValue !== USER_DATA.password) {
     iziToast.error({
       message: 'Incorrect Data',
       iconUrl: iconError,
-      position: "topRight"
-  });
+      position: 'topRight',
+    });
     return;
   }
 
