@@ -16,9 +16,11 @@ import "tui-pagination/dist/tui-pagination.min.css";
 import { createGalleryCard } from './createGalleryCard';
 import { UnsplashAPI } from './UnsplashAPI';
 import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 
 const form = document.querySelector(".js-search-form");
 const gallery = document.querySelector(".gallery");
+const loader = document.querySelector(".loader");
 
 const container = document.getElementById('tui-pagination-container');
 const pagination = new Pagination(container, {
@@ -45,6 +47,7 @@ async function getPhotos(event) {
     api.query = searchText;
     pagination.off('afterMove', renderPhotos);
     pagination.off('afterMove', renderPhotosByQuery);
+    showElement(loader);
     try {
         const images = await api.fetchImages(page);
         if (images.results.length === 0) {
@@ -54,11 +57,22 @@ async function getPhotos(event) {
             });
             return
         }
+        iziToast.success({ message: `We found ${images.total} images!` })
+        if (images.total<=12) {
+            hideElement(container);
+            
+        }
+        else {
+            showElement(container);
+        }
         gallery.innerHTML = createGalleryCard(images.results);
         pagination.reset(images.total);
         pagination.on('afterMove', renderPhotosByQuery);
     } catch (error) {
         console.log(error);
+    }
+    finally {
+        hideElement(loader);
     }
 }
 
@@ -84,4 +98,10 @@ api.fetchPopularImages(page).then(data => {
     pagination.reset(data.total);
  });
 
-
+ 
+ function showElement(element) {
+     element.classList.remove("hidden");
+  }
+ function hideElement(element) {
+     element.classList.add("hidden");
+  }
